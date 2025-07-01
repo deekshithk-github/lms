@@ -1,10 +1,10 @@
 #Base Image
 #AS is referring to COPY in deployment
-FROM node:16 AS builder
+FROM node:20 AS builder
 
 #Prepare Seperate Directory for Frontend
 #RUN --> Run Commands in image
-RUN mkdir /frontend 
+RUN mkdir /frontend
 
 #Copy is used copy the files into directory
 COPY . /frontend
@@ -26,3 +26,8 @@ FROM nginx
 #Copy Code
 #COPY SRC DEST
 COPY --from=builder /frontend/dist /usr/share/nginx/html
+
+EXPOSE 80
+# in the CMD in order for nginx to stay in the foreground
+CMD ["nginx", "-g", "daemon off;"]
+

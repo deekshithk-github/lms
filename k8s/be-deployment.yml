@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms-backend
+  namespace: lms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lms-be
+  template:
+    metadata:
+      labels:
+        app: lms-be
+    spec:
+      containers:
+        - name: backend-container
+          image: deekshithdocker/api-be
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: backend-config-map
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?schema=public"
