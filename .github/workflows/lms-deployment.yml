@@ -1,2 +1,117 @@
 name: lms-deployment
-on: 
+on: workflow_dispatch
+jobs:
+  # approval:
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: production
+    # steps:
+    #   - name: send notification
+    #     uses: slackapi/slack-github-action@v2.1.0
+    #     with:
+    #       webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #       webhook-type: incoming-webhook
+    #       payload: |
+    #         channel: project-11
+    #         text: "lms production deployment started go and approve it"
+  database:
+    # needs: 
+    #   - approval
+    runs-on: self-hosted
+    steps:
+      - name: create network
+        run: |
+          if docker network ls --format '{{ .Name }}' | grep -wq lmsnetwork; then
+            echo "lmsnetwork exist"
+          else
+            docker network create lmsnetwork
+          fi
+      - name: check whether the database lmsdb exist or not
+        run: |
+          if docker ps -a --format '{{ .Names }}' | grep -wq lmsdb; then
+            echo "lmsdb container exists"
+          else
+            docker container run -dt --name lmsdb -p 5432:5432 --network lmsnetwork -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD}} postgres
+          fi
+  build:
+    needs: 
+      # - approval
+      - database
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v4.2.2
+      - name: build backend image
+        run: |
+          cd api
+          docker build -t ${{ vars.DOCKER_USERNAME}}/api:latest .
+      - name: build frontend image
+        run: |
+          cd webapp
+          docker build -t ${{ vars.DOCKER_USERNAME}}/webapp:latest .
+      - name: docker login
+        uses: docker/login-action@v3.4.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWORD}}
+      - name: push backend image
+        run: |
+          docker image tag ${{ vars.DOCKER_USERNAME}}/api:latest ${{ vars.DOCKER_USERNAME}}/api:V$GITHUB_RUN_NUMBER
+          docker push ${{ vars.DOCKER_USERNAME}}/api:latest
+          docker push ${{ vars.DOCKER_USERNAME}}/api:V$GITHUB_RUN_NUMBER
+
+      - name: push frontend image
+        run: |
+          docker image tag ${{ vars.DOCKER_USERNAME}}/webapp:latest ${{ vars.DOCKER_USERNAME}}/webapp:V$GITHUB_RUN_NUMBER
+          docker push ${{ vars.DOCKER_USERNAME}}/webapp:latest
+          docker push ${{ vars.DOCKER_USERNAME}}/webapp:V$GITHUB_RUN_NUMBER          
+    
+  backend:
+    needs: 
+      - build
+      - database
+    runs-on: deploy
+    steps: 
+      - name: pull the image
+        run: docker pull ${{ vars.DOCKER_USERNAME}}/api:latest
+      - name: run the container
+        run: |
+          if docker ps -a --format '{{ .Names }}' | grep -wq backend; then
+            echo "container exist removing it and recreating new one"
+            docker container rm -f backend
+            docker container run -dt --name backend -p 3000:3000 --network lmsnetwork -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lmsdb:5432/postgres -e PORT=3000 -e MODE=local  ${{ vars.DOCKER_USERNAME}}/api:latest
+          else
+            docker container run -dt --name backend -p 3000:3000 --network lmsnetwork -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lmsdb:5432/postgres -e PORT=3000 -e MODE=local  ${{ vars.DOCKER_USERNAME}}/api:latest
+          fi
+  frontend:
+    needs: 
+      - build
+      - backend
+    runs-on: deploy
+    steps: 
+      - name: pull the image
+        run: docker pull ${{ vars.DOCKER_USERNAME}}/webapp:latest
+      - name: run the container
+        run: |
+          if docker ps -a --format '{{ .Names }}' | grep -wq web; then
+            echo "container exist removing it and recreating new one"
+            docker container rm -f web
+            docker container run -dt --name web --network lmsnetwork -p 8080:80 ${{ vars.DOCKER_USERNAME}}/webapp:latest
+          else
+            docker container run -dt --name web --network lmsnetwork -p 8080:80 ${{ vars.DOCKER_USERNAME}}/webapp:latest
+          fi
+  # feedback:
+  #   needs: 
+  #     - frontend
+  #     - backend
+  #     - database
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: send notification
+  #       uses: slackapi/slack-github-action@v2.1.0
+  #       with:
+  #         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #         webhook-type: incoming-webhook
+  #         payload: |
+  #           channel: project-11
+  #           text: "lms deployed successfully"
