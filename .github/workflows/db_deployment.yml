@@ -1,0 +1,20 @@
+name: database setup
+on: workflow_call
+jobs:
+  database:
+    runs-on: self-hosted
+    steps:
+      - name: create network
+        run: |
+          if docker network ls --format '{{ .Name }}' | grep -wq lmsnetwork; then
+            echo "lmsnetwork exist"
+          else
+            docker network create lmsnetwork
+          fi
+      - name: check whether the database lmsdb exist or not
+        run: |
+          if docker ps -a --format '{{ .Names }}' | grep -wq lmsdb; then
+            echo "lmsdb container exists"
+          else
+            docker container run -dt --name lmsdb -p 5432:5432 --network lmsnetwork -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD}} postgres
+          fi
