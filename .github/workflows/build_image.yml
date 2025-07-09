@@ -1,0 +1,32 @@
+name: image builds
+on: workflow_call
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v4.2.2
+      - name: build backend image
+        run: |
+          cd api
+          docker build -t ${{ vars.DOCKER_USERNAME}}/api:latest .
+      - name: build frontend image
+        run: |
+          cd webapp
+          docker build -t ${{ vars.DOCKER_USERNAME}}/webapp:latest .
+      - name: docker login
+        uses: docker/login-action@v3.4.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWORD}}
+      - name: push backend image
+        run: |
+          docker image tag ${{ vars.DOCKER_USERNAME}}/api:latest ${{ vars.DOCKER_USERNAME}}/api:$GITHUB_RUN_NUMBER
+          docker push ${{ vars.DOCKER_USERNAME}}/api:latest
+          docker push ${{ vars.DOCKER_USERNAME}}/api:$GITHUB_RUN_NUMBER
+
+      - name: push frontend image
+        run: |
+          docker image tag ${{ vars.DOCKER_USERNAME}}/webapp:latest ${{ vars.DOCKER_USERNAME}}/webapp:$GITHUB_RUN_NUMBER
+          docker push ${{ vars.DOCKER_USERNAME}}/webapp:latest
+          docker push ${{ vars.DOCKER_USERNAME}}/webapp:$GITHUB_RUN_NUMBER 
