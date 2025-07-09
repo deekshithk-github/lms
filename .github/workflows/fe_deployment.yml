@@ -1,0 +1,17 @@
+name: frontend setup
+on: workflow_call
+jobs:
+  frontend:
+    runs-on: deploy
+    steps: 
+      - name: pull the image
+        run: docker pull ${{ vars.DOCKER_USERNAME}}/webapp:latest
+      - name: run the container
+        run: |
+          if docker ps -a --format '{{ .Names }}' | grep -wq web; then
+            echo "container exist removing it and recreating new one"
+            docker container rm -f web
+            docker container run -dt --name web --network lmsnetwork -p 8080:80 ${{ vars.DOCKER_USERNAME}}/webapp:latest
+          else
+            docker container run -dt --name web --network lmsnetwork -p 8080:80 ${{ vars.DOCKER_USERNAME}}/webapp:latest
+          fi
