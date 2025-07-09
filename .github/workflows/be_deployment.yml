@@ -1,0 +1,17 @@
+name: backend setup
+on: workflow_call
+jobs:
+  backend:
+    runs-on: deploy
+    steps: 
+      - name: pull the image
+        run: docker pull ${{ vars.DOCKER_USERNAME}}/api:latest
+      - name: run the container
+        run: |
+          if docker ps -a --format '{{ .Names }}' | grep -wq backend; then
+            echo "container exist removing it and recreating new one"
+            docker container rm -f backend
+            docker container run -dt --name backend -p 3000:3000 --network lmsnetwork -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lmsdb:5432/postgres -e PORT=3000 -e MODE=local  ${{ vars.DOCKER_USERNAME}}/api:latest
+          else
+            docker container run -dt --name backend -p 3000:3000 --network lmsnetwork -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lmsdb:5432/postgres -e PORT=3000 -e MODE=local  ${{ vars.DOCKER_USERNAME}}/api:latest
+          fi
