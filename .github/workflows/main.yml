@@ -1,0 +1,22 @@
+name: lms_deployment
+on: workflow_dispatch
+jobs:
+  approval:
+    uses: ./.github/workflows/approval.yml
+  database:
+    uses: ./.github/workflows/database.yml
+    needs: approval
+  build:
+    uses: ./.github/workflows/build.yml
+    needs: database
+  backend:
+    uses: ./.github/workflows/backend.yml
+    needs: build
+  frontend:
+    uses: ./.github/workflows/frontend.yml
+    needs: build
+  feedback:
+    uses: ./.github/workflows/feedback.yml
+    needs:
+      - backend
+      - frontend
