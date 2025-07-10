@@ -1,6 +1,6 @@
 name: image builds
 on:
-  workflow_call: {}
+  workflow_call:
 
 jobs:
   build:
