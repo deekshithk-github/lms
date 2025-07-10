@@ -1,9 +1,9 @@
 name: database setup
 on: 
-  workflow_call:
-    secrets:
-      DB_PASSWORD:
-        required: true
+  workflow_dispatch:
+    # secrets:
+    #   DB_PASSWORD:
+    #     required: true
 
 jobs:
   database:
