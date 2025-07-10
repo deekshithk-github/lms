@@ -6,6 +6,8 @@ on:
         required: true
       DOCKER_PASSWORD:
         required: true
+      DB_PASSWORD:
+        required: true
 env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 jobs:
