@@ -1,11 +1,11 @@
 name: backend setup
 on: 
-  workflow_dispatch:
-    # secrets:
-    #   DOCKER_USERNAME:
-    #     required: true
-    #   DOCKER_PASSWORD:
-    #     required: true
+  workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 jobs:
