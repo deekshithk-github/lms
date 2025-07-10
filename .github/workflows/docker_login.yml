@@ -19,3 +19,14 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME}}
           password: ${{ secrets.DOCKER_PASSWORD}}
+      - name: push backend image
+        run: |
+          docker image tag ${{ vars.DOCKER_USERNAME}}/lms-api:latest ${{ vars.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
+          docker push ${{ vars.DOCKER_USERNAME}}/lms-api:latest
+          docker push ${{ vars.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
+
+      - name: push frontend image
+        run: |
+          docker image tag ${{ vars.DOCKER_USERNAME}}/lms-webapp:latest ${{ vars.DOCKER_USERNAME}}/lms-webapp:v$GITHUB_RUN_NUMBER
+          docker push ${{ vars.DOCKER_USERNAME}}/lms-webapp:latest
+          docker push ${{ vars.DOCKER_USERNAME}}/lms-webapp:v$GITHUB_RUN_NUMBER
