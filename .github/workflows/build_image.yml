@@ -1,5 +1,11 @@
 name: image builds
-on: workflow_call
+on: 
+  workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
