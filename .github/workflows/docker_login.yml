@@ -1,0 +1,21 @@
+name: docker testing
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v4.2.2
+      - name: build backend image
+        run: |
+          cd api
+          docker build -t ${{ vars.DOCKER_USERNAME}}/lms-api:latest .
+      - name: build frontend image
+        run: |
+          cd webapp
+          docker build -t ${{ vars.DOCKER_USERNAME}}/lms-webapp:latest .
+      - name: docker login
+        uses: docker/login-action@v3.4.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWORD}}
