@@ -1,5 +1,5 @@
 name: image builds
-on: workflow_dispatch
+on: workflow_call
 
 jobs:
   build:
