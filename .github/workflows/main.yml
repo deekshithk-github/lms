@@ -1,6 +1,5 @@
 name: lms_deployment
-on: 
-  workflow_dispatch:
+on: workflow_dispatch
 jobs:
   database:
     uses: ./.github/workflows/db_deployment.yml
