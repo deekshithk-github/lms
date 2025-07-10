@@ -1,5 +1,11 @@
 name: backend setup
-on: workflow_call
+on: 
+  workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 jobs:
   backend:
     runs-on: deploy
