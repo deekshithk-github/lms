@@ -3,8 +3,13 @@ on: workflow_dispatch
 jobs:
   database:
     uses: ./.github/workflows/db_deployment.yml
+    secrets:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   build:
     uses: ./.github/workflows/build_image.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     needs: database
   backend:
     uses: ./.github/workflows/be_deployment.yml
