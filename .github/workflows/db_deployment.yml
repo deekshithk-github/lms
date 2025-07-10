@@ -1,9 +1,11 @@
 name: database setup
 on: 
-  workflow_dispatch:
-    # secrets:
-    #   DB_PASSWORD:
-    #     required: true
+  workflow_call:
+    secrets:
+      DB_PASSWORD:
+        required: true
+env:
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
 jobs:
   database:
@@ -28,5 +30,4 @@ jobs:
               -e POSTGRES_PASSWORD=$DB_PASSWORD \
               postgres
           fi
-        env:
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
