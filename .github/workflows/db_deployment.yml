@@ -21,5 +21,12 @@ jobs:
           if docker ps -a --format '{{ .Names }}' | grep -wq lms-db; then
             echo "lms-db container exists"
           else
-            docker container run -dt --name lms-db -p 5432:5432 --network lms-network -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD}} postgres
+            docker container run -dt \
+              --name lms-db \
+              -p 5432:5432 \
+              --network lms-network \
+              -e POSTGRES_PASSWORD=$DB_PASSWORD \
+              postgres
+          env:
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           fi
