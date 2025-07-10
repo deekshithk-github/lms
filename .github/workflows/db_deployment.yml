@@ -1,5 +1,7 @@
 name: database setup
-on: workflow_call
+on: 
+  workflow_call:
+
 jobs:
   database:
     runs-on: self-hosted
