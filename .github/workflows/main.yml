@@ -1,16 +1,28 @@
 name: lms_deployment
+
 on: workflow_dispatch
+
 jobs:
   database:
     uses: ./.github/workflows/db_deployment.yml
+
   build:
     uses: ./.github/workflows/build_image.yml
     needs: database
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
   backend:
     uses: ./.github/workflows/be_deployment.yml
     needs: build
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
   frontend:
     uses: ./.github/workflows/fe_deployment.yml
     needs: build
-      
-
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
