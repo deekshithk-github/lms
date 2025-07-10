@@ -8,7 +8,7 @@ jobs:
     #   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   build:
     uses: ./.github/workflows/build_image.yml
-    secrets:
+    #secrets:
       # DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       # DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     needs: database
