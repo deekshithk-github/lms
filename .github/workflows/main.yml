@@ -14,7 +14,6 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
   backend:
     uses: ./.github/workflows/be_deployment.yml
@@ -22,6 +21,7 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
   frontend:
     uses: ./.github/workflows/fe_deployment.yml
