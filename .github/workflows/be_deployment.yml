@@ -1,11 +1,13 @@
 name: backend setup
 on: 
-  workflow_call:
-    secrets:
-      DOCKER_USERNAME:
-        required: true
-      DOCKER_PASSWORD:
-        required: true
+  workflow_dispatch:
+    # secrets:
+    #   DOCKER_USERNAME:
+    #     required: true
+    #   DOCKER_PASSWORD:
+    #     required: true
+env:
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 jobs:
   backend:
     runs-on: deploy
@@ -16,8 +18,20 @@ jobs:
         run: |
           if docker ps -a --format '{{ .Names }}' | grep -wq backend; then
             echo "container exist removing it and recreating new one"
-            docker container rm -f backend
-            docker container run -dt --name backend -p 3000:3000 --network lms-network -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lms-db:5432/postgres -e PORT=3000 -e MODE=local  ${{ secrets.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
+            docker container rm -f backend 
+            docker container run -dt \
+            --name backend -p 3000:3000 \
+            --network lms-network \
+            -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lms-db:5432/postgres \
+            -e PORT=3000 \
+            -e MODE=local \
+            ${{ secrets.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
           else
-            docker container run -dt --name backend -p 3000:3000 --network lms-network -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lms-db:5432/postgres -e PORT=3000 -e MODE=local  ${{ secrets.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
+            docker container run -dt \
+            --name backend -p 3000:3000 \
+            --network lms-network \
+            -e DATABASE_URL=postgresql://postgres:${{ secrets.DB_PASSWORD}}@lms-db:5432/postgres \
+            -e PORT=3000 \
+            -e MODE=local \
+            ${{ secrets.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
           fi
