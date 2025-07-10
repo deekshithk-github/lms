@@ -27,6 +27,6 @@ jobs:
               --network lms-network \
               -e POSTGRES_PASSWORD=$DB_PASSWORD \
               postgres
-          env:
-            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          fi
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+           fi
