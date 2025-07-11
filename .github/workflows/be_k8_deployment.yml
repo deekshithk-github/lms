@@ -3,24 +3,13 @@ on: workflow_dispatch
 jobs:
   deploy:
     runs-on: self-hosted
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Check if namespace exists
-        id: ns-check
+    steps:   
+      - name: Deploy configmaps
         run: |
-          if kubectl get namespace lms > /dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Create namespace if it does not exist
-        if: steps.ns-check.outputs.exists == 'false'
-        run: kubectl create namespace lms
-        
+          kubectl apply -f k8s/be-configmap.yml -n lms
       - name: Deploy backend
         run: |
-          kubectl apply -f k8s/be-deployment.yml
+          kubectl apply -f k8s/be-deployment.yml -n lms
       - name: Deploy clusterIP
         run: |
-          kubectl apply -f k8s/be-service.yml
+          kubectl apply -f k8s/be-service.yml -n lms
