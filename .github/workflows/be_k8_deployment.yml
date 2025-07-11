@@ -1,0 +1,17 @@
+name: backend deployment
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Deploy configmaps
+        run: |
+          kubectl apply -f k8s/be-configmap.yml
+      - name: Deploy backend
+        run: |
+          kubectl apply -f k8s/be-deployment.yml
+      - name: Deploy clusterIP
+        run: |
+          kubectl apply -f k8s/be-service.yml
