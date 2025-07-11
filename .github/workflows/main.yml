@@ -25,7 +25,9 @@ jobs:
 
   frontend:
     uses: ./.github/workflows/fe_deployment.yml
-    needs: build
+    needs: 
+      - build
+      - backend
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
