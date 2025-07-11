@@ -4,8 +4,9 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Check if namespace exists
+        id: ns-check
+        run: |
           if kubectl get namespace lms > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
