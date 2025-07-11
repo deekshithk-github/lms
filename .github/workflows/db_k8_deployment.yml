@@ -6,9 +6,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Create namespace
-        run: |
-          kubectl create namespace lms
+          if kubectl get namespace lms > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Create namespace if it does not exist
+        if: steps.ns-check.outputs.exists == 'false'
+        run: kubectl create namespace lms
+        
       - name: Deploy secrets
         run: |
           kubectl apply -f k8s/pg-secret.yml -n lms
