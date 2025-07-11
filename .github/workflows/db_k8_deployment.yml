@@ -7,10 +7,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Set up kubeconfig from secret
-      #   run: |
-      #     echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > $HOME/.kube/config
-      #     chmod 600 $HOME/.kube/config
+      - name: Set up kubeconfig from secret
+        run: |
+          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
