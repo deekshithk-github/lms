@@ -6,13 +6,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Create namespace
+        run: |
+          kubectl namespace create lms
       - name: Deploy secrets
         run: |
-          kubectl apply -f k8s/pg-secret.yml
+          kubectl apply -f k8s/pg-secret.yml -n lms
       - name: Deploy database
         run: |
-          kubectl apply -f k8s/pg-deployment.yml
+          kubectl apply -f k8s/pg-deployment.yml -n lms
       - name: Deploy clusterIP
         run: |
-          kubectl apply -f k8s/pg-service.yml
+          kubectl apply -f k8s/pg-service.yml -n lms
 
