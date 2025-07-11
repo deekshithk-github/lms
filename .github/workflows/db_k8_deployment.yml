@@ -1,0 +1,48 @@
+name: database setup
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # - name: Set up kubeconfig from secret
+      #   run: |
+      #     echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > $HOME/.kube/config
+      #     chmod 600 $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/pg-secret.yml
+
+#   workflow_call:
+#     secrets:
+#       DB_PASSWORD:
+#         required: true
+# env:
+#   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+# jobs:
+#   database:
+#     runs-on: self-hosted
+#     steps:
+#       - name: create network
+#         run: |
+#           if docker network ls --format '{{ .Name }}' | grep -wq lms-network; then
+#             echo "lms-network exist"
+#           else
+#             docker network create lms-network
+#           fi
+#       - name: check whether the database lms-db exist or not
+#         run: |
+#           if docker ps -a --format '{{ .Names }}' | grep -wq lms-db; then
+#             echo "lms-db container exists"
+#           else
+#             docker container run -dt \
+#               --name lms-db \
+#               -p 5432:5432 \
+#               --network lms-network \
+#               -e POSTGRES_PASSWORD=$DB_PASSWORD \
+#               postgres
+#           fi
