@@ -20,7 +20,9 @@ jobs:
         run: |
           if docker ps -a --format '{{ .Names }}' | grep -wq backend; then
             echo "container exist removing it and recreating new one"
-            docker container rm -f backend 
+            docker container rm -f backend
+            echo "deleting the image ${{ secrets.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER "
+            docker rmi ${{ secrets.DOCKER_USERNAME}}/lms-api:v$GITHUB_RUN_NUMBER
             docker container run -dt \
             --name backend -p 3000:3000 \
             --network lms-network \
