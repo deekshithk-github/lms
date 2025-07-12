@@ -1,17 +1,16 @@
-name: lms_k8s
+name: lms_k8s_deployment
 on: 
   workflow_dispatch:
   
 jobs:
-  docker-login:
-    uses: ./.github/workflows/docker_login.yml
-
-  build-image:
-    needs: docker-login
+  build:
     uses: ./.github/workflows/build_image.yml
-
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      
   deploy-db:
-    needs: build-image
+    needs: build
     uses: ./.github/workflows/db_k8_deployment.yml
 
   deploy-be:
