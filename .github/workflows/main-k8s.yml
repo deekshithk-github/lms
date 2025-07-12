@@ -4,30 +4,12 @@ on:
 
 jobs:
   database:
-    uses: ./.github/workflows/db_deployment.yml
-    secrets:
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
-  build:
-    uses: ./.github/workflows/build_image.yml
-    needs: database
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    uses: ./.github/workflows/db_k8_deployment.yml
 
   backend:
-    uses: ./.github/workflows/be_deployment.yml
-    needs: build
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    uses: ./.github/workflows/be_k8_deployment.yml
+    needs: database
 
   frontend:
-    uses: ./.github/workflows/fe_deployment.yml
-    needs: 
-      - build
-      - backend
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    uses: ./.github/workflows/fe_k8_deployment.yml
+    needs: backend
