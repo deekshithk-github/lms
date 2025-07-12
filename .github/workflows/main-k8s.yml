@@ -1,15 +1,23 @@
 name: lms_k8s
 on: 
   workflow_dispatch:
-
+  
 jobs:
-  database:
+  docker-login:
+    uses: ./.github/workflows/docker_login.yml
+
+  build-image:
+    needs: docker-login
+    uses: ./.github/workflows/build_image.yml
+
+  deploy-db:
+    needs: build-image
     uses: ./.github/workflows/db_k8_deployment.yml
 
-  backend:
+  deploy-be:
+    needs: deploy-db
     uses: ./.github/workflows/be_k8_deployment.yml
-    needs: database
 
-  frontend:
+  deploy-fe:
+    needs: deploy-be
     uses: ./.github/workflows/fe_k8_deployment.yml
-    needs: backend
