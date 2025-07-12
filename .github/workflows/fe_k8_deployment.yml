@@ -1,5 +1,11 @@
 name: frontend deployment
-on: workflow_dispatch
+on: 
+  workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 jobs:
   deploy:
     runs-on: self-hosted
