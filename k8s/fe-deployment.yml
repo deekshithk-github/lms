@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend-container
-          image: deekshithdocker/web-fe
+          image: deekshithdocker/lms-webapp
           imagePullPolicy: Always
           ports:
             - containerPort: 80
