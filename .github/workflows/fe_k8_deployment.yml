@@ -1,0 +1,12 @@
+name: frontend deployment
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:   
+      - name: Deploy frontend
+        run: |
+          kubectl apply -f k8s/fe-deployment.yml -n lms
+      - name: Deploy LoadBalancer
+        run: |
+          kubectl apply -f k8s/fe-service.yml -n lms
