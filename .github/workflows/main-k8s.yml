@@ -3,20 +3,20 @@ on:
   workflow_dispatch:
   
 jobs:
-  build:
-    uses: ./.github/workflows/build_image.yml
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       
   deploy-db:
-    needs: build
     uses: ./.github/workflows/db_k8_deployment.yml
 
   deploy-be:
     needs: deploy-db
     uses: ./.github/workflows/be_k8_deployment.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   deploy-fe:
     needs: deploy-be
     uses: ./.github/workflows/fe_k8_deployment.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
