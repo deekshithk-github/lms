@@ -1,5 +1,5 @@
 name: database deployment
-on: workflow_dispatch
+on: workflow_call
 jobs:
   deploy:
     runs-on: self-hosted
