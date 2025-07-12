@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend-container
-          image: deekshithdocker/api-be
+          image: deekshithdocker/lms-api
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
